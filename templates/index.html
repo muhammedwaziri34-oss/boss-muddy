@@ -1,0 +1,5 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>BOSS MUDDY</title>
+<style>body{font-family:sans-serif;background:#111;color:#fff;text-align:center;padding:20px}input{padding:12px;width:80%;margin:5px;border-radius:8px;border:none}button{padding:12px 20px;background:#ffcc00;border:none;border-radius:8px;font-weight:bold;width:85%}.card{background:#222;margin:10px;padding:10px;border-radius:8px}</style></head>
+<body><h1>BOSS MUDDY 🔥</h1><form action="/sajili" method="post"><input name="jina" placeholder="Jina la mteja" required><br><input name="simu" placeholder="Namba ya simu" required><br><br><button>SAJILI MTEJA</button></form><hr>
+{% for m in wateja %}<div class="card">{{ m.jina }} - {{ m.simu }}</div>{% endfor %}
+</body></html>

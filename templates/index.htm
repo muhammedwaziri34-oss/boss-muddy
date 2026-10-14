@@ -1,0 +1,29 @@
+cat > /tmp/setup.sh << 'ENDOFFILE'
+mkdir -p ~/boss_muddy/templates
+cat > ~/boss_muddy/app.py << 'PY'
+from flask import Flask, render_template, request, redirect
+import os
+app = Flask(__name__)
+FILE=os.path.expanduser("~/boss_muddy/wateja.txt")
+@app.route("/")
+def home():
+ w=[]
+ if os.path.exists(FILE):
+  for l in open(FILE):
+   if "," in l:
+    j,s=l.strip().split(",",1)
+    w.append({"jina":j,"simu":s})
+ return render_template("index.html",wateja=w)
+@app.route("/sajili",methods=["POST"])
+def sajili():
+ j=request.form.get("jina"); s=request.form.get("simu")
+ if j and s: open(FILE,"a").write(f"{j},{s}\n")
+ return redirect("/")
+app.run(host="0.0.0.0",port=5000)
+PY
+cat > ~/boss_muddy/templates/index.html << 'HTML'
+<!DOCTYPE html><html><head><title>BOSS MUDDY</title><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{font-family:sans-serif;background:#f0f2f5;padding:20px}.card{background:white;max-width:500px;margin:auto;padding:20px;border-radius:12px}input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}button{width:100%;padding:12px;background:#0d47a1;color:white;border:none;border-radius:8px}</style></head><body><div class="card"><h1 style="text-align:center;color:#0d47a1">BOSS MUDDY</h1><form action="/sajili" method="POST"><input name="jina" placeholder="Jina la mteja" required><input name="simu" placeholder="Namba ya simu" required><button>Sajili Mteja</button></form><h3>Wateja: {{wateja|length}}</h3>{%for m in wateja%}<div style="background:#e3f2fd;padding:10px;margin:5px 0;border-radius:8px"><b>{{m.jina}}</b> - {{m.simu}}</div>{%else%}Hakuna mteja{%endfor%}</div></body></html>
+HTML
+echo "Tayari!"
+ENDOFFILE
+bash /tmp/setup.sh
