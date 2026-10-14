@@ -1,0 +1,9 @@
+{
+  "name": "Boss Muddy WIFI",
+  "short_name": "BossMuddy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/4712/4712109.png","sizes": "512x512","type": "image/png"}]
+}

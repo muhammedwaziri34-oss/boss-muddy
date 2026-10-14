@@ -1,5 +1,19 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>BOSS MUDDY</title>
-<style>body{font-family:sans-serif;background:#111;color:#fff;text-align:center;padding:20px}input{padding:12px;width:80%;margin:5px;border-radius:8px;border:none}button{padding:12px 20px;background:#ffcc00;border:none;border-radius:8px;font-weight:bold;width:85%}.card{background:#222;margin:10px;padding:10px;border-radius:8px}</style></head>
-<body><h1>BOSS MUDDY 🔥</h1><form action="/sajili" method="post"><input name="jina" placeholder="Jina la mteja" required><br><input name="simu" placeholder="Namba ya simu" required><br><br><button>SAJILI MTEJA</button></form><hr>
-{% for m in wateja %}<div class="card">{{ m.jina }} - {{ m.simu }}</div>{% endfor %}
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boss Muddy WIFI</title><link rel="manifest" href="/static/manifest.json"><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-slate-900 text-white p-4">
+<h1 class="text-2xl font-bold">Boss Muddy WIFI - 12 Jioni to 12 Jioni</h1>
+<form action="/sajili" method="POST" class="bg-slate-800 p-4 rounded mt-4 grid grid-cols-1 gap-2">
+<input name="jina" placeholder="Jina la Mteja" required class="p-2 text-black rounded">
+<input name="simu" placeholder="Simu" required class="p-2 text-black rounded">
+<select name="aina" class="p-2 text-black rounded"><option value="siku">WA SIKU - 1000 (24h)</option><option value="mwezi">WA MWEZI - 10000 (15 siku)</option></select>
+<button class="bg-green-600 p-2 rounded">Sajili Mteja</button>
+</form>
+<div class="mt-6">
+{% for m in wateja %}
+<div class="p-3 mb-2 rounded flex justify-between {% if m.status=='MEKUNDU' %}bg-red-600{% elif m.status=='NJANO' %}bg-yellow-500 text-black{% else %}bg-green-700{% endif %}">
+<div><b>{{m.jina}}</b> ({{m.simu}}) - {{m.aina}} - {{m.baki}}<br><small>MWISHO: {{m.mwisho.strftime('%d/%m %H:%M') if m.mwisho else ''}} | Lipwa: {{m.lipwa}}</small></div>
+<form action="/lipia/{{m.id}}" method="POST"><button class="bg-black text-white px-3 py-1 rounded text-sm">Lipia Tena</button></form>
+</div>
+{% endfor %}
+</div>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js')}</script>
 </body></html>
