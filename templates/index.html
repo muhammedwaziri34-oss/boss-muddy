@@ -1,58 +1,23 @@
-<!DOCTYPE html>
-<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdn.tailwindcss.com"></script><title>Boss Muddy WIFI</title></head>
-<body class="bg-gradient-to-br from-blue-900 to-black min-h-screen flex items-center justify-center p-4 text-white">
-<div class="bg-white text-black w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-
-<!-- LOGO -->
-<h1 class="text-2xl font-black text-center">BOSS MUDDY WIFI</h1>
-<p class="text-center text-[10px] text-slate-500">TUHUMA MUHAMMED ALLY</p>
-
-<!-- ===== 1. SEHEMU YA MTEJA (NJE) ===== -->
-<div id="mtejaDiv">
-<input id="jina" placeholder="Jina lako" class="w-full p-4 border-2 rounded-xl mt-4">
-<input id="simu" placeholder="Namba 07..." class="w-full p-4 border-2 rounded-xl mt-3">
-<select id="aina" class="w-full p-4 border-2 rounded-xl mt-3 font-bold"><option value="siku">Siku - 1000</option><option value="mwezi">Mwezi - 10000</option></select>
-<button onclick="lipa()" id="btnLipa" class="w-full bg-green-600 text-white p-4 rounded-xl mt-4 font-black">LIPA TIGO PESA</button>
-<div id="successDiv" class="hidden text-center mt-4"><div class="bg-black text-yellow-400 text-3xl font-black p-4 rounded-xl" id="passShow"></div><p class="text-xs mt-2">WIFI: BossMuddy-WIFI</p></div>
-</div>
-
-<!-- ===== 2. SEHEMU YA ADMIN (NDANI YA APP HIYO HIYO) ===== -->
-<div id="adminLoginDiv" class="hidden">
-<h2 class="font-black text-center mt-2">INGIA NDANI - MFUMO</h2>
-<input id="adminUser" value="boss" placeholder="Username" class="w-full p-3 border-2 rounded-xl mt-3">
-<input id="adminPass" type="password" placeholder="Password" class="w-full p-3 border-2 rounded-xl mt-3">
-<button onclick="ingiaAdmin()" class="w-full bg-black text-white p-3 rounded-xl mt-3 font-bold">INGIA MFUMO</button>
-<p id="adminError" class="text-red-600 text-xs text-center mt-2 hidden">Password si sahihi!</p>
-</div>
-
-<div id="adminDashDiv" class="hidden text-left text-xs"></div>
-
-<!-- ===== BUTTON YA KUBADILISHA ===== -->
-<div class="flex justify-between mt-6 text-[10px]">
-<button onclick="showMteja()" class="underline">👤 MTEJA</button>
-<button onclick="showAdminLogin()" class="bg-slate-900 text-white px-3 py-1 rounded-full">🔒 MFUMO - BOSS TU</button>
-</div>
-
-</div>
-
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>BOSS MUDDY</title>
+<style>body{background:#000;color:#fff;font-family:sans-serif;text-align:center;padding:15px}.card{background:#111;border:2px solid #00ff88;border-radius:20px;padding:20px}input{width:90%;padding:12px;margin:8px;border-radius:10px;border:none}.btn{background:#00ff88;color:#000;padding:14px;width:100%;border:none;border-radius:10px;font-weight:bold;margin-top:10px}</style></head>
+<body><h2>🔥 BOSS MUDDY WIFI 🔥</h2>
+<div class="card"><p>MAC Yako: <b id="mac">{{mac}}</b></p>
+<input id="jina" placeholder="Jina lako"><input id="namba" placeholder="Namba ya TigoPesa 07..."><button class="btn" onclick="jisajili()">LIPA 1000 SIKU 1</button><p id="status"></p></div>
 <script>
-function showMteja(){document.getElementById('mtejaDiv').classList.remove('hidden'); document.getElementById('adminLoginDiv').classList.add('hidden');}
-function showAdminLogin(){document.getElementById('mtejaDiv').classList.add('hidden'); document.getElementById('adminLoginDiv').classList.remove('hidden');}
-
-async function lipa(){
- const jina=document.getElementById('jina').value; const simu=document.getElementById('simu').value; const aina=document.getElementById('aina').value;
- if(!jina||!simu){alert('Weka Jina na Simu'); return;}
- document.getElementById('btnLipa').innerText='Inatuma Push...';
- const res=await fetch('/api/lipa-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:simu,amount:aina==='siku'?1000:10000,jina:jina})});
- const data=await res.json();
- document.getElementById('successDiv').classList.remove('hidden');
- document.getElementById('passShow').innerText=data.password;
- document.getElementById('btnLipa').innerText='LIPA TENA';
+const MAC = document.getElementById('mac').innerText;
+function jisajili(){
+ let jina=document.getElementById('jina').value; let namba=document.getElementById('namba').value;
+ if(!jina||!namba){alert('Jaza jina na namba');return;}
+ document.getElementById('status').innerText='Inatuma PUSH...';
+ fetch('/api/jisajili',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jina:jina,namba:namba,mac:MAC})})
+ .then(r=>r.json()).then(d=>{
+   document.getElementById('status').innerText='PUSH imetumwa! Lipa kisha utaunganishwa';
+   // Baada ya kulipa, tunaita hii
+   setTimeout(()=>thibitisha(d.password), 5000);
+ });
 }
-async function ingiaAdmin(){
- const user=document.getElementById('adminUser').value; const pass=document.getElementById('adminPass').value;
- const res=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`user=${user}&pass=${pass}`});
- if(res.redirected || res.url.includes('/admin')){ window.location.href='/admin'; } else { document.getElementById('adminError').classList.remove('hidden'); }
+function thibitisha(pass){
+ fetch('/api/thibitisha-malipo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mac:MAC,plan:'1day',password:pass})})
+ .then(r=>r.json()).then(d=>{document.getElementById('status').innerText='✅ UMELIPA! Internet inawaka sasa';});
 }
-</script>
-</body></html>
+</script></body></html>
