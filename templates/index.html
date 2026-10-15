@@ -1,19 +1,77 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boss Muddy WIFI</title><link rel="manifest" href="/static/manifest.json"><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-slate-900 text-white p-4">
 <h1 class="text-2xl font-bold">Boss Muddy WIFI - 12 Jioni to 12 Jioni</h1>
+<p class="text-sm text-slate-400 mt-1">Malipo: TUHUMA MUHAMMED ALLY</p>
+
+<!-- FORM YA USAJILI -->
 <form action="/sajili" method="POST" class="bg-slate-800 p-4 rounded mt-4 grid grid-cols-1 gap-2">
 <input name="jina" placeholder="Jina la Mteja" required class="p-2 text-black rounded">
-<input name="simu" placeholder="Simu" required class="p-2 text-black rounded">
-<select name="aina" class="p-2 text-black rounded"><option value="siku">WA SIKU - 1000 (24h)</option><option value="mwezi">WA MWEZI - 10000 (15 siku)</option></select>
-<button class="bg-green-600 p-2 rounded">Sajili Mteja</button>
+<input name="simu" placeholder="Simu" required class="p-2 text-black rounded" id="simuInput">
+<select name="aina" id="ainaSelect" class="p-2 text-black rounded"><option value="siku">WA SIKU - 1000 (24h)</option><option value="mwezi">WA MWEZI - 10000 (15 siku)</option></select>
+<div class="grid grid-cols-3 gap-2 mt-2">
+<button type="button" onclick="lipaPush('tigo')" class="bg-blue-700 p-2 rounded text-sm font-bold">LIPA TIGO<br><span class="text-[10px]">0707037351</span></button>
+<button type="button" onclick="lipaPush('vodacom')" class="bg-red-600 p-2 rounded text-sm font-bold">LIPA M-PESA<br><span class="text-[10px]">0797740362</span></button>
+<button type="button" onclick="lipaPush('halotel')" class="bg-yellow-500 text-black p-2 rounded text-sm font-bold">LIPA HALO<br><span class="text-[10px]">0611248500</span></button>
+</div>
+<button class="bg-green-600 p-2 rounded mt-2">Sajili Bila Malipo (Admin)</button>
 </form>
+
+<!-- MODAL YA PASSWORD -->
+<div id="passModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+<div class="bg-white text-black rounded-2xl p-6 w-full max-w-sm text-center">
+<h2 class="text-xl font-bold text-green-600">✅ MALIPO YAMEPOKELEWA!</h2>
+<p class="text-sm mt-2">Jina: TUHUMA MUHAMMED ALLY</p>
+<div class="bg-slate-900 text-white p-4 rounded-xl mt-4">
+<p class="text-xs text-slate-400">PASSWORD YAKO YA WIFI</p>
+<p id="wifiPass" class="text-4xl font-black tracking-widest mt-1">BM-0000</p>
+<p class="text-xs mt-2">WIFI: <b>BossMuddy-WIFI</b></p>
+</div>
+<p class="text-xs mt-3">Namba: <span id="passSimu"></span> | Kiasi: <span id="passKiasi"></span></p>
+<button onclick="document.getElementById('passModal').classList.add('hidden')" class="bg-green-600 text-white w-full p-3 rounded-xl mt-4 font-bold">SAWA, NIMEONA</button>
+<button onclick="copyPass()" class="w-full p-2 mt-2 text-sm text-slate-500">Copy Password</button>
+</div>
+</div>
+
+<!-- ORODHA YA WATEJA -->
 <div class="mt-6">
 {% for m in wateja %}
 <div class="p-3 mb-2 rounded flex justify-between {% if m.status=='MEKUNDU' %}bg-red-600{% elif m.status=='NJANO' %}bg-yellow-500 text-black{% else %}bg-green-700{% endif %}">
-<div><b>{{m.jina}}</b> ({{m.simu}}) - {{m.aina}} - {{m.baki}}<br><small>MWISHO: {{m.mwisho.strftime('%d/%m %H:%M') if m.mwisho else ''}} | Lipwa: {{m.lipwa}}</small></div>
+<div><b>{{m.jina}}</b> ({{m.simu}}) - {{m.aina}} - {{m.baki}}<br><small>MWISHO: {{m.mwisho.strftime('%d/%m %H:%M') if m.mwisho else ''}} | Lipwa: {{m.lipwa}}</small><br>
+{% if m.password %}<span class="bg-black text-white px-2 py-0.5 rounded text-xs">PASS: {{m.password}}</span>{% endif %}
+</div>
 <form action="/lipia/{{m.id}}" method="POST"><button class="bg-black text-white px-3 py-1 rounded text-sm">Lipia Tena</button></form>
 </div>
 {% endfor %}
 </div>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js')}</script>
+
+<script>
+function lipaPush(mtandao){
+  const simu = document.getElementById('simuInput').value;
+  const aina = document.getElementById('ainaSelect').value;
+  if(!simu){ alert('Weka Simu Kwanza!'); return; }
+  const kiasi = aina==='siku'? 1000 : 10000;
+  const nambaKulipia = {tigo:'0707037351', vodacom:'0797740362', halotel:'0611248500'}[mtandao];
+
+  if(confirm(`Lipa TZS ${kiasi} kwa ${mtandao.toUpperCase()} - ${nambaKulipia}\nJina: TUHUMA MUHAMMED ALLY\n\nNamba ya mteja: ${simu}\n\nUkituma, bonyeza OK password itatoka`)){
+    fetch('/api/lipa-push', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({phone: simu, amount: kiasi, network: mtandao})
+    }).then(r=>r.json()).then(d=>{
+      if(d.success){
+        document.getElementById('wifiPass').innerText = d.password;
+        document.getElementById('passSimu').innerText = simu;
+        document.getElementById('passKiasi').innerText = kiasi;
+        document.getElementById('passModal').classList.remove('hidden');
+      } else { alert(d.message); }
+    });
+  }
+}
+function copyPass(){
+  const p = document.getElementById('wifiPass').innerText;
+  navigator.clipboard.writeText(p);
+  alert('Password ' + p + ' imecopiwa!');
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js')}
+</script>
 </body></html>
