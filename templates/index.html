@@ -1,39 +1,55 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdn.tailwindcss.com"></script><title>Admin - Boss Muddy</title></head>
-<body class="bg-slate-900 text-white p-4">
-<div class="flex justify-between items-center"><h1 class="text-xl font-bold">ADMIN - BOSS MUDDY</h1><a href="/admin/logout" class="bg-red-600 px-3 py-1 rounded text-sm">Toka</a></div>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+<title>Boss Muddy - WIFI</title>
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-black min-h-screen flex items-center justify-center p-4 text-white">
+<div class="bg-white text-black w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+<h1 class="text-2xl font-black text-center">BOSS MUDDY WIFI</h1>
+<p class="text-center text-xs text-slate-500">TUHUMA MUHAMMED ALLY - 0707037351</p>
 
-<div class="grid grid-cols-2 gap-3 mt-4">
-<div class="bg-green-700 p-4 rounded-xl"><p class="text-xs">HELA LEO</p><p class="text-2xl font-bold">{{hela_leo}} TZS</p><p class="text-[10px]">Leo: {{wateja_leo|length}} watu</p></div>
-<div class="bg-blue-700 p-4 rounded-xl"><p class="text-xs">JUMLA</p><p class="text-2xl font-bold">{{hela_mwezi}} TZS</p><p class="text-[10px]">Wote: {{wateja|length}}</p></div>
+<div id="formDiv">
+<input id="jina" placeholder="Jina lako" class="w-full p-4 border-2 rounded-xl mt-4" required>
+<input id="simu" placeholder="Namba ya Tigo 07..." class="w-full p-4 border-2 rounded-xl mt-3" required>
+<select id="aina" class="w-full p-4 border-2 rounded-xl mt-3 font-bold">
+<option value="siku">Siku 1 - TZS 1,000</option>
+<option value="mwezi">Mwezi - TZS 10,000</option>
+</select>
+<button onclick="lipa()" id="btnLipa" class="w-full bg-green-600 text-white p-4 rounded-xl mt-4 font-black text-lg">LIPA TIGO PESA</button>
+<p class="text-[10px] text-center mt-2 text-slate-400">Utaletewa Push - Ingiza PIN kuthibitisha</p>
 </div>
 
-<!-- ADD MTU MANUAL HAPA NDANI YA LOGIN -->
-<div class="bg-white text-black p-4 rounded-2xl mt-5">
-<h2 class="font-black text-lg">➕ ADD MTU MANUAL (KWA MKONO)</h2>
-<p class="text-xs text-slate-500">Hapa ndipo una-add mtu aliyekuja dukani na pesa taslimu</p>
-<form action="/admin/add" method="POST" class="grid gap-2 mt-3">
-<input name="jina" placeholder="Jina la Mteja" required class="p-3 border-2 rounded-xl">
-<input name="simu" placeholder="Simu 07..." required class="p-3 border-2 rounded-xl">
-<select name="aina" class="p-3 border-2 rounded-xl"><option value="siku">Siku 1 - 1000 TZS</option><option value="mwezi">Mwezi - 10000 TZS</option></select>
-<input name="password" placeholder="Password (acha wazi - itajitengeneza)" class="p-3 border-2 rounded-xl">
-<button class="bg-black text-white p-3 rounded-xl font-bold">MUUNGE SASA ✅</button>
-</form>
+<div id="successDiv" class="hidden text-center">
+<div class="text-6xl">✅</div>
+<h2 class="text-xl font-black mt-2">MALIPO YAMEFANIKIWA!</h2>
+<p class="text-sm mt-2">Password yako ya WIFI ni:</p>
+<div class="bg-black text-yellow-400 text-3xl font-black p-4 rounded-xl mt-3 tracking-widest" id="passShow">BOSS15</div>
+<p class="text-xs mt-3">Unganisha WIFI: <b>BossMuddy-WIFI</b></p>
+<button onclick="location.reload()" class="mt-4 text-xs underline">Rudi</button>
 </div>
 
-<div class="bg-slate-800 p-4 rounded-xl mt-4">
-<h2 class="font-bold">🔑 Badilisha Password</h2>
-<form action="/admin/set-password" method="POST" class="grid gap-2 mt-2">
-<input name="simu" placeholder="Simu ya mteja" required class="p-2 text-black rounded">
-<input name="new_password" placeholder="Password mpya BM-XXXX" required class="p-2 text-black rounded">
-<button class="bg-yellow-500 text-black p-2 rounded font-bold">BADILISHA</button>
-</form>
 </div>
 
-<div class="mt-6"><h2 class="font-bold">WATEJA WOTE ({{wateja|length}})</h2>
-{% for m in wateja %}
-<div class="bg-slate-800 p-3 rounded mt-2 flex justify-between text-sm"><div><b>{{m.jina}}</b> - {{m.simu}}<br><span class="bg-black text-yellow-400 px-2 py-1 rounded text-xs">PASS: {{m.password}}</span> - {{m.lipwa}} TZS<br><small>{{m.siku[:16] if m.siku else ''}}</small></div><form action="/admin/delete/{{m.id}}" method="POST"><button class="bg-red-600 px-2 py-1 rounded text-xs">Futa</button></form></div></div>
-{% endfor %}
-</div>
-
-<div class="bg-slate-800 p-3 rounded mt-6 text-xs"><p>Tigo: {{mitandao.tigo}} | M-Pesa: {{mitandao.vodacom}} | Halo: {{mitandao.halotel}}<br>Jina: {{jina}}</p></div>
-</body></html>
+<script>
+async function lipa(){
+ const jina=document.getElementById('jina').value;
+ const simu=document.getElementById('simu').value;
+ const aina=document.getElementById('aina').value;
+ if(!jina ||!simu){alert('Weka Jina na Namba!'); return;}
+ const amount = aina==='siku'?1000:10000;
+ document.getElementById('btnLipa').innerText='Inatuma Push...';
+ try{
+  const res = await fetch('/api/lipa-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:simu, amount:amount, jina:jina})});
+  const data = await res.json();
+  if(data.success){
+   document.getElementById('formDiv').classList.add('hidden');
+   document.getElementById('successDiv').classList.remove('hidden');
+   document.getElementById('passShow').innerText=data.password;
+  }else{alert('Imeshindikana'); document.getElementById('btnLipa').innerText='LIPA TIGO PESA';}
+ }catch(e){alert('Error: '+e); document.getElementById('btnLipa').innerText='LIPA TIGO PESA';}
+}
+</script>
+</body>
+</html>
