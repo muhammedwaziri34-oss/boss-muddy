@@ -68,3 +68,22 @@ def admin_passwords():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+@app.route('/api/lipa-push', methods=['POST'])
+def lipa_push():
+    import random
+    data = request.json
+    phone = data.get('phone')
+    amount = data.get('amount', 1000)
+
+    password = f"BM-{random.randint(1000,9999)}"
+
+    # Tafuta mteja na muwekee password
+    for m in wateja:
+        if m['simu'] == phone:
+            m['password'] = password
+
+    return jsonify({
+        "success": True,
+        "password": password,
+        "wifi_name": "BossMuddy-WIFI"
+    })
