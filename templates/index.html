@@ -1,23 +1,76 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>BOSS MUDDY</title>
-<style>body{background:#000;color:#fff;font-family:sans-serif;text-align:center;padding:15px}.card{background:#111;border:2px solid #00ff88;border-radius:20px;padding:20px}input{width:90%;padding:12px;margin:8px;border-radius:10px;border:none}.btn{background:#00ff88;color:#000;padding:14px;width:100%;border:none;border-radius:10px;font-weight:bold;margin-top:10px}</style></head>
-<body><h2>🔥 BOSS MUDDY WIFI 🔥</h2>
-<div class="card"><p>MAC Yako: <b id="mac">{{mac}}</b></p>
-<input id="jina" placeholder="Jina lako"><input id="namba" placeholder="Namba ya TigoPesa 07..."><button class="btn" onclick="jisajili()">LIPA 1000 SIKU 1</button><p id="status"></p></div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOSS MUDDY - SYSTEM KAMILI</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;text-align:center;padding:12px;margin:0}
+.card{background:#111;border:2px solid #00ff88;border-radius:20px;padding:18px;margin:10px 0}
+input{width:92%;padding:13px;margin:7px 0;border-radius:10px;border:none;font-size:15px}
+.btn{background:#00ff88;color:#000;padding:14px;width:100%;border:none;border-radius:12px;font-weight:bold;font-size:16px;margin-top:10px}
+.btn2{background:#333;color:#fff;padding:10px;width:100%;border-radius:10px;border:1px solid #00ff88;margin-top:10px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+th,td{border:1px solid #00ff88;padding:6px}
+.hide{display:none}
+</style>
+</head>
+<body>
+
+<!-- SEHEMU 1: MTEJA -->
+<div id="mteja">
+<h2>🔥 BOSS MUDDY WIFI 🔥</h2>
+<p>Dar - WIFI Bora Zaidi</p>
+<div class="card">
+<p>MAC YAKO: <b id="macDisplay">{{mac}}</b></p>
+<input id="jina" placeholder="1. Jina lako">
+<input id="namba" placeholder="2. Namba TigoPesa 07...">
+<button class="btn" onclick="jisajili()">3. LIPA 1000 - SIKU 1</button>
+<p id="status" style="color:#00ff88;margin-top:15px"></p>
+</div>
+<button class="btn2" onclick="showAdmin()">INGIA KAMA BOSS (Admin)</button>
+</div>
+
+<!-- SEHEMU 2: ADMIN - MAOKOTO -->
+<div id="admin" class="hide">
+<h2>BOSS - MAOKOTO YAKO</h2>
+<input id="adminPass" type="password" placeholder="Password ya Boss">
+<button class="btn" onclick="checkBoss()">FUNGUA MAOKOTO</button>
+<div id="maokotoArea" class="hide">
+<div class="card"><h3>Wateja Walio Lipa Leo</h3><table id="tbl"><tr><th>Jina</th><th>Namba</th><th>MAC</th></tr></table></div>
+<button class="btn2" onclick="showMteja()">RUDI KWA MTEJA</button>
+</div>
+</div>
+
 <script>
-const MAC = document.getElementById('mac').innerText;
+const MAC = document.getElementById('macDisplay').innerText;
 function jisajili(){
- let jina=document.getElementById('jina').value; let namba=document.getElementById('namba').value;
- if(!jina||!namba){alert('Jaza jina na namba');return;}
- document.getElementById('status').innerText='Inatuma PUSH...';
- fetch('/api/jisajili',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jina:jina,namba:namba,mac:MAC})})
- .then(r=>r.json()).then(d=>{
-   document.getElementById('status').innerText='PUSH imetumwa! Lipa kisha utaunganishwa';
-   // Baada ya kulipa, tunaita hii
-   setTimeout(()=>thibitisha(d.password), 5000);
- });
+  let jina=document.getElementById('jina').value;
+  let namba=document.getElementById('namba').value;
+  if(!jina||!namba){alert('Jaza Jina na Namba!');return;}
+  document.getElementById('status').innerText='⏳ Inatuma PUSH kwa '+namba+'...';
+  fetch('/api/jisajili',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jina:jina,namba:namba,mac:MAC})})
+  .then(r=>r.json()).then(d=>{
+    document.getElementById('status').innerText='✅ PUSH imetumwa! Lipa simuni kwako, kisha subiri sec 5...';
+    setTimeout(()=>{ thibitisha(d.password) }, 6000);
+  });
 }
 function thibitisha(pass){
- fetch('/api/thibitisha-malipo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mac:MAC,plan:'1day',password:pass})})
- .then(r=>r.json()).then(d=>{document.getElementById('status').innerText='✅ UMELIPA! Internet inawaka sasa';});
+  document.getElementById('status').innerText='⏳ Inathibitisha malipo...';
+  fetch('/api/thibitisha-malipo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mac:MAC,plan:'1day',password:pass})})
+  .then(r=>r.json()).then(d=>{ document.getElementById('status').innerText='🎉 HONGERA! UMEUNGANISHWA - Anza kutumia Internet!'; });
 }
-</script></body></html>
+function showAdmin(){ document.getElementById('mteja').classList.add('hide'); document.getElementById('admin').classList.remove('hide'); }
+function showMteja(){ document.getElementById('admin').classList.add('hide'); document.getElementById('mteja').classList.remove('hide'); }
+function checkBoss(){
+  let p=document.getElementById('adminPass').value;
+  if(p!=='boss123'){alert('Password sio sahihi!');return;} // Badilisha password yako hapa
+  document.getElementById('maokotoArea').classList.remove('hide');
+  fetch('/api/admin/maokoto').then(r=>r.json()).then(data=>{
+    let t=document.getElementById('tbl');
+    data.forEach(m=>{ t.innerHTML+=`<tr><td>${m.jina}</td><td>${m.namba}</td><td>${m.mac}</td></tr>` });
+  });
+}
+</script>
+</body>
+</html>
