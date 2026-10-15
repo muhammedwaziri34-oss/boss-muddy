@@ -1,55 +1,58 @@
 <!DOCTYPE html>
-<html lang="sw">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="https://cdn.tailwindcss.com"></script>
-<title>Boss Muddy - WIFI</title>
-</head>
+<html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdn.tailwindcss.com"></script><title>Boss Muddy WIFI</title></head>
 <body class="bg-gradient-to-br from-blue-900 to-black min-h-screen flex items-center justify-center p-4 text-white">
 <div class="bg-white text-black w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-<h1 class="text-2xl font-black text-center">BOSS MUDDY WIFI</h1>
-<p class="text-center text-xs text-slate-500">TUHUMA MUHAMMED ALLY - 0707037351</p>
 
-<div id="formDiv">
-<input id="jina" placeholder="Jina lako" class="w-full p-4 border-2 rounded-xl mt-4" required>
-<input id="simu" placeholder="Namba ya Tigo 07..." class="w-full p-4 border-2 rounded-xl mt-3" required>
-<select id="aina" class="w-full p-4 border-2 rounded-xl mt-3 font-bold">
-<option value="siku">Siku 1 - TZS 1,000</option>
-<option value="mwezi">Mwezi - TZS 10,000</option>
-</select>
-<button onclick="lipa()" id="btnLipa" class="w-full bg-green-600 text-white p-4 rounded-xl mt-4 font-black text-lg">LIPA TIGO PESA</button>
-<p class="text-[10px] text-center mt-2 text-slate-400">Utaletewa Push - Ingiza PIN kuthibitisha</p>
+<!-- LOGO -->
+<h1 class="text-2xl font-black text-center">BOSS MUDDY WIFI</h1>
+<p class="text-center text-[10px] text-slate-500">TUHUMA MUHAMMED ALLY</p>
+
+<!-- ===== 1. SEHEMU YA MTEJA (NJE) ===== -->
+<div id="mtejaDiv">
+<input id="jina" placeholder="Jina lako" class="w-full p-4 border-2 rounded-xl mt-4">
+<input id="simu" placeholder="Namba 07..." class="w-full p-4 border-2 rounded-xl mt-3">
+<select id="aina" class="w-full p-4 border-2 rounded-xl mt-3 font-bold"><option value="siku">Siku - 1000</option><option value="mwezi">Mwezi - 10000</option></select>
+<button onclick="lipa()" id="btnLipa" class="w-full bg-green-600 text-white p-4 rounded-xl mt-4 font-black">LIPA TIGO PESA</button>
+<div id="successDiv" class="hidden text-center mt-4"><div class="bg-black text-yellow-400 text-3xl font-black p-4 rounded-xl" id="passShow"></div><p class="text-xs mt-2">WIFI: BossMuddy-WIFI</p></div>
 </div>
 
-<div id="successDiv" class="hidden text-center">
-<div class="text-6xl">✅</div>
-<h2 class="text-xl font-black mt-2">MALIPO YAMEFANIKIWA!</h2>
-<p class="text-sm mt-2">Password yako ya WIFI ni:</p>
-<div class="bg-black text-yellow-400 text-3xl font-black p-4 rounded-xl mt-3 tracking-widest" id="passShow">BOSS15</div>
-<p class="text-xs mt-3">Unganisha WIFI: <b>BossMuddy-WIFI</b></p>
-<button onclick="location.reload()" class="mt-4 text-xs underline">Rudi</button>
+<!-- ===== 2. SEHEMU YA ADMIN (NDANI YA APP HIYO HIYO) ===== -->
+<div id="adminLoginDiv" class="hidden">
+<h2 class="font-black text-center mt-2">INGIA NDANI - MFUMO</h2>
+<input id="adminUser" value="boss" placeholder="Username" class="w-full p-3 border-2 rounded-xl mt-3">
+<input id="adminPass" type="password" placeholder="Password" class="w-full p-3 border-2 rounded-xl mt-3">
+<button onclick="ingiaAdmin()" class="w-full bg-black text-white p-3 rounded-xl mt-3 font-bold">INGIA MFUMO</button>
+<p id="adminError" class="text-red-600 text-xs text-center mt-2 hidden">Password si sahihi!</p>
+</div>
+
+<div id="adminDashDiv" class="hidden text-left text-xs"></div>
+
+<!-- ===== BUTTON YA KUBADILISHA ===== -->
+<div class="flex justify-between mt-6 text-[10px]">
+<button onclick="showMteja()" class="underline">👤 MTEJA</button>
+<button onclick="showAdminLogin()" class="bg-slate-900 text-white px-3 py-1 rounded-full">🔒 MFUMO - BOSS TU</button>
 </div>
 
 </div>
 
 <script>
+function showMteja(){document.getElementById('mtejaDiv').classList.remove('hidden'); document.getElementById('adminLoginDiv').classList.add('hidden');}
+function showAdminLogin(){document.getElementById('mtejaDiv').classList.add('hidden'); document.getElementById('adminLoginDiv').classList.remove('hidden');}
+
 async function lipa(){
- const jina=document.getElementById('jina').value;
- const simu=document.getElementById('simu').value;
- const aina=document.getElementById('aina').value;
- if(!jina ||!simu){alert('Weka Jina na Namba!'); return;}
- const amount = aina==='siku'?1000:10000;
+ const jina=document.getElementById('jina').value; const simu=document.getElementById('simu').value; const aina=document.getElementById('aina').value;
+ if(!jina||!simu){alert('Weka Jina na Simu'); return;}
  document.getElementById('btnLipa').innerText='Inatuma Push...';
- try{
-  const res = await fetch('/api/lipa-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:simu, amount:amount, jina:jina})});
-  const data = await res.json();
-  if(data.success){
-   document.getElementById('formDiv').classList.add('hidden');
-   document.getElementById('successDiv').classList.remove('hidden');
-   document.getElementById('passShow').innerText=data.password;
-  }else{alert('Imeshindikana'); document.getElementById('btnLipa').innerText='LIPA TIGO PESA';}
- }catch(e){alert('Error: '+e); document.getElementById('btnLipa').innerText='LIPA TIGO PESA';}
+ const res=await fetch('/api/lipa-push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:simu,amount:aina==='siku'?1000:10000,jina:jina})});
+ const data=await res.json();
+ document.getElementById('successDiv').classList.remove('hidden');
+ document.getElementById('passShow').innerText=data.password;
+ document.getElementById('btnLipa').innerText='LIPA TENA';
+}
+async function ingiaAdmin(){
+ const user=document.getElementById('adminUser').value; const pass=document.getElementById('adminPass').value;
+ const res=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`user=${user}&pass=${pass}`});
+ if(res.redirected || res.url.includes('/admin')){ window.location.href='/admin'; } else { document.getElementById('adminError').classList.remove('hidden'); }
 }
 </script>
-</body>
-</html>
+</body></html>
