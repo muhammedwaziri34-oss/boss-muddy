@@ -15,7 +15,7 @@ WATEJA = "wateja.json" # Hapa ndipo hesabu ya maokoto
 def mteja_base():
     # Hapa tunamkamata MAC na IP yake automatically
     mac = request.args.get('mac') or request.remote_addr
-    return render_template('mteja.html', mac=mac)
+    return render_template('index.html', mac=mac)
 
 # 2. MTU AKIJISAJILI
 @app.route('/api/jisajili', methods=['POST'])
